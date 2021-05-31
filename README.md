@@ -3,7 +3,7 @@
 ## Description
 This program is designed to simulate the stratification of ferroparticles caused by gravitational and magnetic fields in soft ferronematics.
 
-More details about the problem itself and what a ferronematic is can be found in this [*article*][1].
+More detail about this problem and the meaning of ferronematic, you can found in this [*article*][1].
 
 ## Using
 
