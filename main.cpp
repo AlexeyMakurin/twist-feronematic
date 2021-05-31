@@ -35,7 +35,7 @@ std::vector<std::pair<double, TwistFerronematic>> parse_json(char* argv[]) {
 	nlohmann::json objJson;
 	input >> objJson;
 
-	objJson = objJson["twist_feronematics"];
+	objJson = objJson["twist_ferronematics"];
 
 	std::vector<std::pair<double, TwistFerronematic>> reader;
 
@@ -63,20 +63,20 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-	for (auto& [h, twist_feronematic]: parse_json(argv)) {
+	for (auto& [h, twist_ferronematic]: parse_json(argv)) {
 		double current_h = 0.0;
 		double step = 0.05;
 
 		while (current_h <= h + 0.5 * step) {
 
-			twist_feronematic.Calculation(current_h);
+			twist_ferronematic.Calculation(current_h);
 
 			std::cout << "h: " << current_h << std::endl;
 			current_h += step;
 		}
 
-		std::cout << twist_feronematic.Name() << std::endl;
-		write(twist_feronematic);
+		std::cout << twist_ferronematic.Name() << std::endl;
+		write(twist_ferronematic);
 		
 	}
 
