@@ -25,5 +25,5 @@ The executable file must be passed a json file of the following form:
 
 ### Example
 
-[1]:(https://iopscience.iop.org/article/10.1088/1742-6596/1389/1/012058)
-[2]:(https://github.com/nlohmann/json/releases/tag/v3.9.1)
+[1]:https://iopscience.iop.org/article/10.1088/1742-6596/1389/1/012058
+[2]:https://github.com/nlohmann/json/releases/tag/v3.9.1
