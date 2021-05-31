@@ -1,14 +1,14 @@
 #include "twist-ferronematic.h"
 
-TwistFerronematic::TwistFerronematic(const double& alpha, const double& b, const double& sigma, const double& kappa, const int& notes) :
-	alpha_(alpha), b_(b), sigma_(sigma), kappa_(kappa), notes_(notes) {
+TwistFerronematic::TwistFerronematic(const double& alpha, const double& b, const double& sigma, const double& kappa, const int& nodes) :
+	alpha_(alpha), b_(b), sigma_(sigma), kappa_(kappa), nodes_(nodes) {
 
 	// Integral Q at h = 0;
 	double integral_q = kappa_ * exp(sigma_ / kappa_) * (1 - exp(-alpha_ / kappa_)) / alpha_;
 
-	double count_layer = static_cast<double>(notes_) - 1;
+	double count_layer = static_cast<double>(nodes_) - 1;
 
-	for (int layer = 0; layer < notes_; ++layer) {
+	for (int layer = 0; layer < nodes_; ++layer) {
 		zeta.push_back(layer / count_layer);
 		phi.push_back(pi_2 * zeta[layer]);
 		g.push_back(exp((sigma_ - alpha_ * layer / count_layer) / kappa_) / integral_q);
@@ -34,7 +34,7 @@ std::string TwistFerronematic::Name() const {
 	out.precision(2);
 	out << std::fixed << "h = " << h_ << ", " << "alpha = " << alpha_ << ", " << 
 		"b = " << b_ << ", " << "sigma = " << sigma_ << ", " <<
-		"kappa = " << kappa_ << ", " << "notes = " << notes_;
+		"kappa = " << kappa_ << ", " << "notes = " << nodes_;
 	return out.str();
 }
 
@@ -56,13 +56,13 @@ std::vector<double> TwistFerronematic::G() const {
 
 
 void TwistFerronematic::EquationPhi(const double& h) {
-	std::vector<double> phi_(notes_);
+	std::vector<double> phi_(nodes_);
 	phi_[0] = 0;
-	phi_[notes_ - 1] = pi_2;
+	phi_[nodes_ - 1] = pi_2;
 
 	error = 0;
 
-	for (int layer = 1; layer < notes_ - 1; ++layer) {
+	for (int layer = 1; layer < nodes_ - 1; ++layer) {
 		phi_[layer] = 0.5 * (phi[layer + 1] + phi[layer - 1] + pow(zeta[layer] - zeta[layer + 1], 2) *
 			(h * h * 0.5 * sin(2 * phi[layer]) + sigma_ * g[layer] * sin(2 * phi[layer] - 2 * psi[layer])));
 
@@ -75,7 +75,7 @@ void TwistFerronematic::EquationPhi(const double& h) {
 }
 
 void TwistFerronematic::EquationPsi(const double& h) {
-	for (int layer = 0; layer < notes_; ++layer) {
+	for (int layer = 0; layer < nodes_; ++layer) {
 		double error_psi = 1;
 		while (error_psi >= 2.0e-5) {
 
@@ -97,16 +97,16 @@ double TwistFerronematic::ExpOfQ(const int& i, const double& h) const {
 
 double TwistFerronematic::IntegralQ(const double& h) {
 	double q = 0;
-	for (int layer = 0; layer < notes_ - 1; ++layer) {
+	for (int layer = 0; layer < nodes_ - 1; ++layer) {
 		q += ExpOfQ(layer, h) + ExpOfQ(layer + 1, h);
 	}
 
-	return q /= (2 * (notes_ - 1));
+	return q /= (2 * (nodes_ - 1));
 }
 
 void TwistFerronematic::EquationG(const double& h) {
 	double q = IntegralQ(h);
-	for (int layer = 0; layer < notes_; ++layer) {
+	for (int layer = 0; layer < nodes_; ++layer) {
 		g[layer] = ExpOfQ(layer, h) / q;
 	}
 

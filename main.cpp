@@ -47,7 +47,7 @@ std::vector<std::pair<double, TwistFerronematic>> parse_json(char* argv[]) {
 			structure["b"].get<double>(),
 			structure["sigma"].get<double>(),
 			structure["kappa"].get<double>(),
-			structure["notes"].get<int>()
+			structure["nodes"].get<int>()
 		);
 
 		reader.push_back(std::make_pair(h, tw));

@@ -12,7 +12,7 @@ const double pi_2 = 1.57079632679489661923;
 
 class TwistFerronematic {
 public:
-	TwistFerronematic(const double& alpha, const double& b, const double& sigma, const double& kappa, const int& notes);
+	TwistFerronematic(const double& alpha, const double& b, const double& sigma, const double& kappa, const int& nodes);
 
 	void Calculation(const double& h);
 
@@ -32,7 +32,7 @@ private:
 	double b_;
 	double sigma_;
 	double kappa_;
-	int notes_;
+	int nodes_;
 
 	std::vector<double> zeta;
 	std::vector<double> phi;
