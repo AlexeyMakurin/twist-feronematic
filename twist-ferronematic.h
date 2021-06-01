@@ -7,7 +7,7 @@
 #include <cmath>
 #include <sstream>
 
-const double pi_2 = 1.57079632679489661923;
+const double PI_2 = 1.57079632679489661923;
 
 
 class TwistFerronematic {

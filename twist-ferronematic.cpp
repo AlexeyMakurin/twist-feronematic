@@ -10,7 +10,7 @@ TwistFerronematic::TwistFerronematic(const double& alpha, const double& b, const
 
 	for (int layer = 0; layer < nodes_; ++layer) {
 		zeta.push_back(layer / count_layer);
-		phi.push_back(pi_2 * zeta[layer]);
+		phi.push_back(PI_2 * zeta[layer]);
 		g.push_back(exp((sigma_ - alpha_ * layer / count_layer) / kappa_) / integral_q);
 	}
 
@@ -58,13 +58,13 @@ std::vector<double> TwistFerronematic::G() const {
 void TwistFerronematic::EquationPhi(const double& h) {
 	std::vector<double> phi_(nodes_);
 	phi_[0] = 0;
-	phi_[nodes_ - 1] = pi_2;
+	phi_[nodes_ - 1] = PI_2;
 
 	error = 0;
 
 	for (int layer = 1; layer < nodes_ - 1; ++layer) {
 		phi_[layer] = 0.5 * (phi[layer + 1] + phi[layer - 1] + pow(zeta[layer] - zeta[layer + 1], 2) *
-			(h * h * 0.5 * sin(2 * phi[layer]) + sigma_ * g[layer] * sin(2 * phi[layer] - 2 * psi[layer])));
+			(h * h * 0.5 * sin(2 * phi[layer]) - sigma_ * g[layer] * sin(2 * phi[layer] - 2 * psi[layer])));
 
 		if (abs(phi_[layer] - phi[layer]) / phi_[layer] > error) {
 			error = abs(phi_[layer] - phi[layer]) / phi_[layer];
