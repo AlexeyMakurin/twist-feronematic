@@ -1,9 +1,34 @@
 #include "twist-ferronematic.h"
 
-TwistFerronematic::TwistFerronematic(const double& alpha, const double& b, const double& sigma, const double& kappa, const int& nodes) :
-	alpha_(alpha), b_(b), sigma_(sigma), kappa_(kappa), nodes_(nodes) {
 
-	// Integral Q at h = 0;
+double Error(const double& old_val, const double& new_val) {
+	return abs(old_val - new_val) / old_val;
+}
+
+double CalculatedVar(const double& det, const Eigen::MatrixXd& matrix, 
+	std::vector<double>& errors, const double& old_val) {
+
+	double det_x = (matrix / 10).determinant();
+
+	if (10.0e-9 * abs(det_x) >= 10.0e+9 * abs(det)) {
+
+		std::cout << "det_x: " << det_x << std::endl;
+		std::cout << "det: " << det << std::endl;
+
+		throw std::exception("Safety check failed!");
+	}
+	
+
+	double new_val = det_x / det;
+	errors.push_back(abs(old_val - new_val) / old_val);
+
+	return new_val;
+}
+
+TwistFerronematic::TwistFerronematic(const double& alpha, const double& b, 
+	const double& sigma, const double& kappa, const int& nodes): alpha_(alpha), b_(b),
+	sigma_(sigma), kappa_(kappa), nodes_(nodes){
+
 	double integral_q = kappa_ * exp(sigma_ / kappa_) * (1 - exp(-alpha_ / kappa_)) / alpha_;
 
 	double count_layer = static_cast<double>(nodes_) - 1;
@@ -17,24 +42,13 @@ TwistFerronematic::TwistFerronematic(const double& alpha, const double& b, const
 	psi = phi;
 }
 
-void TwistFerronematic:: Calculation(const double& h) {
-	h_ = h;
-
-	do {
-		EquationPhi(h);
-		EquationPsi(h);
-		EquationG(h);
-
-	} while (error >= 2.0e-5);
-	
-}
 
 std::string TwistFerronematic::Name() const {
 	std::ostringstream out;
 	out.precision(2);
-	out << std::fixed << "h = " << h_ << ", " << "alpha = " << alpha_ << ", " << 
+	out << std::fixed << "h = " << h_ << ", " << "alpha = " << alpha_ << ", " <<
 		"b = " << b_ << ", " << "sigma = " << sigma_ << ", " <<
-		"kappa = " << kappa_ << ", " << "notes = " << nodes_;
+		"kappa = " << kappa_ << ", " << "nodes = " << nodes_;
 	return out.str();
 }
 
@@ -54,60 +68,128 @@ std::vector<double> TwistFerronematic::G() const {
 	return g;
 }
 
+void TwistFerronematic::FillingMatrix(Eigen::MatrixXd& variables, Eigen::MatrixXd& functions) {
 
-void TwistFerronematic::EquationPhi(const double& h) {
-	std::vector<double> phi_(nodes_);
-	phi_[0] = 0;
-	phi_[nodes_ - 1] = PI_2;
+	for (int col = 0; col < variables.cols(); ++col) {
+		for (int row = 0; row < nodes_; ++row) {
 
-	error = 0;
-
-	for (int layer = 1; layer < nodes_ - 1; ++layer) {
-		phi_[layer] = 0.5 * (phi[layer + 1] + phi[layer - 1] + pow(zeta[layer] - zeta[layer + 1], 2) *
-			(h * h * 0.5 * sin(2 * phi[layer]) - sigma_ * g[layer] * sin(2 * phi[layer] - 2 * psi[layer])));
-
-		if (abs(phi_[layer] - phi[layer]) / phi_[layer] > error) {
-			error = abs(phi_[layer] - phi[layer]) / phi_[layer];
+			variables(2 * row, col) = 2 * row - 2 == col and col != 2 * nodes_ - 4 ?
+				phi[row] * 1.01 + 0.01 : phi[row];
+			variables(2 * row + 1, col) = 2 * row - 1 == col and col != 2 * nodes_ - 4 ?
+				psi[row] * 1.01 + 0.01 : psi[row];
 		}
+
+		EquationG(variables.col(col));
+
+		auto equation_psi = EquationPsi(variables.col(col));
+		auto equation_phi = EquationPhi(variables.col(col));
+
+		for (int row = 0; row < equation_psi.rows(); ++row) {
+			functions(2 * row + 1, col) = equation_phi(row);
+			functions(2 * row + 2, col) = equation_psi(row);
+		}
+
+		functions(0, col) = 1;
 	}
 
-	phi = phi_;
 }
 
-void TwistFerronematic::EquationPsi(const double& h) {
-	for (int layer = 0; layer < nodes_; ++layer) {
-		double error_psi = 1;
-		while (error_psi >= 2.0e-5) {
+void TwistFerronematic::Calculation(const double& h) {
+	h_ = h;
+	
+	if (h_ > 1.0e-5) {
 
-			double k1 = b_ * h * cos(psi[layer]) + sigma_ * sin(2 * phi[layer] - 2 * psi[layer]);
-			double k2 = -b_ * h * sin(psi[layer]) - 2 * sigma_ * cos(2 * phi[layer] - 2 * psi[layer]);
+		psi[0] = ((b_ * h_) / (2 * sigma_)) < 1.0 ? asin((b_ * h_) / (2 * sigma_)) : PI_2;
 
-			double psi_ = psi[layer] - k1 / k2;
+		for (int i = 1; i < phi.size() - 1; ++i) {
+			phi[i] = PI_2;
+			psi[i] = PI_2;
+		}
 
-			error_psi = abs(psi_ - psi[layer]) / psi_;
-			psi[layer] = psi_;
+		Eigen::MatrixXd variables(2 * nodes_, 2 * nodes_ - 3);
+		Eigen::MatrixXd functions(2 * nodes_ - 3, 2 * nodes_ - 3);
+
+		double error = 1;
+		while (error >= 2.0e-5) {
+
+			FillingMatrix(variables, functions);
+
+			double det = (functions / 10).determinant();
+			std::vector<double> errors;
+			for (int row = 1; row < phi.size() - 1; ++row) {
+				
+				try {
+
+					functions.row(0) = variables.row(2 * row);
+					phi[row] = CalculatedVar(det, functions, errors, phi[row]);
+
+					functions.row(0) = variables.row(2 * row + 1);
+					psi[row] = CalculatedVar(det, functions, errors, psi[row]);
+
+				} catch (std::exception& e) {
+
+					FillingMatrix(variables, functions);
+
+				}
+
+			}
+
+			error = *std::max_element(errors.begin(), errors.end());
+			std::cout << error << std::endl;
 		}
 	}
 }
 
-double TwistFerronematic::ExpOfQ(const int& i, const double& h) const {
-	return exp((b_ * h * sin(psi[i]) + sigma_ * cos(phi[i] - psi[i]) *
-		cos(phi[i] - psi[i]) - alpha_ * zeta[i]) / kappa_);
+
+Eigen::VectorXd TwistFerronematic::EquationPhi(const Eigen::VectorXd& vars) {
+
+	Eigen::VectorXd equation(nodes_ - 2);
+	//vars(2 * i) = phi[i]
+	//vars(2 * i + 1) = psi[i]
+	for (int i = 1; i < nodes_ - 1; ++i) {
+		equation(i - 1) = (vars(2 * i - 2) - 2 * vars(2 * i) + vars(2 * i + 2)) / 
+			pow(zeta[i] - zeta[i + 1], 2) + 0.5 * h_ * h_ * sin(2 * vars(2 * i)) - 
+			sigma_ * g[i] * sin(2 * vars(2 * i) - 2 * vars(2 * i + 1));
+	}
+
+	return equation;
 }
 
-double TwistFerronematic::IntegralQ(const double& h) {
+
+Eigen::VectorXd TwistFerronematic::EquationPsi(const Eigen::VectorXd& vars) {
+
+	Eigen::VectorXd equation(nodes_ - 2);
+
+	//vars[2 * i] = phi[i]
+	//vars[2 * i + 1] = psi[i]
+	for (int i = 1; i < nodes_ - 1; ++i) {
+		equation(i - 1) = b_ * h_ * cos(vars(2 * i + 1)) + 
+			sigma_ * sin(2 * vars(2 * i) - 2 * vars(2 * i + 1));
+	}
+
+	return equation;
+}
+
+
+double TwistFerronematic::ExpOfQ(const int& i, const Eigen::VectorXd& vars) const {
+	return exp((b_ * h_ * sin(vars(2 * i + 1)) +
+		sigma_ * pow(cos(vars(2 * i) - vars(2 * i + 1)), 2) - alpha_ * zeta[i]) / kappa_);
+}
+
+
+double TwistFerronematic::IntegralQ(const Eigen::VectorXd& vars) {
 	double q = 0;
 	for (int layer = 0; layer < nodes_ - 1; ++layer) {
-		q += ExpOfQ(layer, h) + ExpOfQ(layer + 1, h);
+		q += ExpOfQ(layer, vars) + ExpOfQ(layer + 1, vars);
 	}
 
 	return q /= (2 * (nodes_ - 1));
 }
 
-void TwistFerronematic::EquationG(const double& h) {
-	double q = IntegralQ(h);
-	for (int layer = 0; layer < nodes_; ++layer) {
-		g[layer] = ExpOfQ(layer, h) / q;
-	}
 
+void TwistFerronematic::EquationG(const Eigen::VectorXd& vars) {
+	double q = IntegralQ(vars);
+	for (int layer = 0; layer < nodes_; ++layer) {
+		g[layer] = ExpOfQ(layer, vars) / q;
+	}
 }

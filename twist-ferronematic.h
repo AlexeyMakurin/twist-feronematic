@@ -1,20 +1,18 @@
-
 #ifndef TWIST_FERRONEMATIC_H
 #define TWIST_FERRONEMATIC_H
 
+#include <Eigen/LU>
+#include <iostream>
 #include <vector>
-#include <string>
+#include <algorithm>
 #include <cmath>
-#include <sstream>
 
 const double PI_2 = 1.57079632679489661923;
 
-
 class TwistFerronematic {
 public:
-	TwistFerronematic(const double& alpha, const double& b, const double& sigma, const double& kappa, const int& nodes);
-
-	void Calculation(const double& h);
+	TwistFerronematic(const double& alpha, const double& b, const double& sigma, 
+		const double& kappa, const int& nodes);
 
 	std::string Name() const;
 
@@ -26,6 +24,7 @@ public:
 
 	std::vector<double> G() const;
 
+	void Calculation(const double& h);
 
 private:
 	double alpha_;
@@ -39,19 +38,22 @@ private:
 	std::vector<double> psi;
 	std::vector<double> g;
 
-	double error;
-	double h_ = 0.00;
+	double h_;
 
-	void EquationPhi(const double& h);
+	Eigen::VectorXd TwistFerronematic::EquationPhi(const Eigen::VectorXd& vars);
 
-	void EquationPsi(const double& h);
+	Eigen::VectorXd EquationPsi(const Eigen::VectorXd& vars);
 
-	double ExpOfQ(const int& i, const double& h) const;
+	double ExpOfQ(const int& i, const Eigen::VectorXd& vars) const;
 
-	double IntegralQ(const double& h);
+	double IntegralQ(const Eigen::VectorXd& vars);
 
-	void EquationG(const double& h);
+	void EquationG(const Eigen::VectorXd& vars);
+
+
+	void FillingMatrix(Eigen::MatrixXd& variables, Eigen::MatrixXd& functions);
 };
+
 
 
 #endif
