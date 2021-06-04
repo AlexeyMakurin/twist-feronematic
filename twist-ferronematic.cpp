@@ -34,7 +34,7 @@ std::string TwistFerronematic::Name() const {
 	out.precision(2);
 	out << std::fixed << "h = " << h_ << ", " << "alpha = " << alpha_ << ", " << 
 		"b = " << b_ << ", " << "sigma = " << sigma_ << ", " <<
-		"kappa = " << kappa_ << ", " << "notes = " << nodes_;
+		"kappa = " << kappa_ << ", " << "nodes = " << nodes_;
 	return out.str();
 }
 
