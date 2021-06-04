@@ -34,7 +34,7 @@ As an example, take the input data file *inputs.json*:
 {
     "twist_ferronematics": [
         {
-            "h": [0.00, 1.00, 2.00],
+            "h": [0.00, 1.00, 5.00],
             "configuration": {"alpha": 1.00, "b": 100.00, "sigma": 4.00, "kappa": 20.00, "nodes": 100}
         }
     ]
