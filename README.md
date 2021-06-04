@@ -17,9 +17,11 @@ Program requires a third-party library [*JSON for Modern C++*][2].
 ```
 {
     "twist_ferronematics": [
-        {"h": 1.0, "alpha": 2.0, "b": 3.0, "sigma": 1.0, "kappa": 0.2, "nodes": 20}
+        {
+            "h": [0.10],
+            "configuration": {"alpha": 1.00, "b": 100.00, "sigma": 4.00, "kappa": 20.00, "nodes": 100}
+        }
     ]
-
 }
 ```
 - The parameter *h* characterizes the magnetic field in which the twist ferronematic  is located.
@@ -31,11 +33,11 @@ As an example, take the input data file *inputs.json*:
 ```
 {
     "twist_ferronematics": [
-        {"h": 0.00, "alpha": 1.00, "b": 100.00, "sigma": 4.00, "kappa": 20.00, "nodes": 100},
-        {"h": 1.00, "alpha": 1.00, "b": 100.00, "sigma": 4.00, "kappa": 20.00, "nodes": 100},
-        {"h": 2.00, "alpha": 1.00, "b": 100.00, "sigma": 4.00, "kappa": 20.00, "nodes": 100}
+        {
+            "h": [0.00, 1.00, 2.00],
+            "configuration": {"alpha": 1.00, "b": 100.00, "sigma": 4.00, "kappa": 20.00, "nodes": 100}
+        }
     ]
-
 }
 ```
 
