@@ -79,6 +79,8 @@ void TwistFerronematic::FillingMatrix(Eigen::MatrixXd& variables, Eigen::MatrixX
 				psi[row] * 1.01 + 0.01 : psi[row];
 		}
 
+		
+
 		EquationG(variables.col(col));
 
 		auto equation_psi = EquationPsi(variables.col(col));
@@ -88,6 +90,8 @@ void TwistFerronematic::FillingMatrix(Eigen::MatrixXd& variables, Eigen::MatrixX
 			functions(2 * row + 1, col) = equation_phi(row);
 			functions(2 * row + 2, col) = equation_psi(row);
 		}
+
+		
 
 		functions(0, col) = 1;
 	}
@@ -103,7 +107,7 @@ void TwistFerronematic::Calculation(const double& h) {
 
 		for (int i = 1; i < phi.size() - 1; ++i) {
 			phi[i] = PI_2;
-			psi[i] = PI_2;
+			psi[i] = PI_2 * 0.75;
 		}
 
 		Eigen::MatrixXd variables(2 * nodes_, 2 * nodes_ - 3);
@@ -115,6 +119,13 @@ void TwistFerronematic::Calculation(const double& h) {
 			FillingMatrix(variables, functions);
 
 			double det = (functions / 10).determinant();
+			int scope = 2;
+			while (isnan(det)) {
+				std::cout << functions << std::endl;
+				det = (functions * scope).determinant();
+				scope += 2;
+			}
+			
 			std::vector<double> errors;
 			for (int row = 1; row < phi.size() - 1; ++row) {
 				
@@ -167,13 +178,16 @@ Eigen::VectorXd TwistFerronematic::EquationPsi(const Eigen::VectorXd& vars) {
 			sigma_ * sin(2 * vars(2 * i) - 2 * vars(2 * i + 1));
 	}
 
-	return equation;
+	return equation; 
 }
 
 
 double TwistFerronematic::ExpOfQ(const int& i, const Eigen::VectorXd& vars) const {
-	return exp((b_ * h_ * sin(vars(2 * i + 1)) +
-		sigma_ * pow(cos(vars(2 * i) - vars(2 * i + 1)), 2) - alpha_ * zeta[i]) / kappa_);
+	auto s1 = (b_ * h_ * (sin(vars(2 * i + 1)) - 1)) / kappa_;
+	auto s2 = (sigma_ * pow(cos(vars(2 * i) - vars(2 * i + 1)), 2)) / kappa_;
+	auto s3 = (-alpha_ * zeta[i]) / kappa_;
+
+	return exp(s1 + s2 + s3);
 }
 
 
@@ -182,7 +196,7 @@ double TwistFerronematic::IntegralQ(const Eigen::VectorXd& vars) {
 	for (int layer = 0; layer < nodes_ - 1; ++layer) {
 		q += ExpOfQ(layer, vars) + ExpOfQ(layer + 1, vars);
 	}
-
+	
 	return q /= (2 * (nodes_ - 1));
 }
 
