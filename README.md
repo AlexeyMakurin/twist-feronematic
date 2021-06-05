@@ -59,10 +59,10 @@ The result of the simulation will be in the automatically created folder *"resul
 'h = 2.50, alpha = 1.00, b = 100.00, sigma = 4.00, kappa = 0.20, notes = 100.csv'
 ```
 The visualization of the obtained data is as follows.<br/>
-**Twist-ferronematic (alpha = 1.00, b = 100.00, sigma = 4.00, kappa = 20.00, notes = 100):**
+**Twist-ferronematic (alpha = 1.00, b = 100.00, sigma = 4.00, kappa = 20.00, notes = 100):**<br/>
 ![Image alt](image/results.png)
 
-**Twist-ferronematic (alpha = 1.00, b = 100.00, sigma = 4.00, kappa = 0.20, notes = 100):**
+**Twist-ferronematic (alpha = 1.00, b = 100.00, sigma = 4.00, kappa = 0.20, notes = 100):**,<br/>
 ![Image alt](image/results_2.png)
 
 The [*article*][1] provides an explanation of the meaning and origin of the quantities 𝜁, 𝜑, 𝜓, *g* and the analysis of the resulting graphs.
