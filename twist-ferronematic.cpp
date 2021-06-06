@@ -91,8 +91,11 @@ void TwistFerronematic::EquationPsi(const double& h) {
 }
 
 double TwistFerronematic::ExpOfQ(const int& i, const double& h) const {
-	return exp((b_ * h * sin(psi[i]) + sigma_ * cos(phi[i] - psi[i]) *
-		cos(phi[i] - psi[i]) - alpha_ * zeta[i]) / kappa_);
+	double s1 = (b_ * h * (sin(psi[i]) - 1)) / kappa_;
+	double s2 = (sigma_ * pow(cos(phi[i] - psi[i]), 2)) / kappa_;
+	double s3 = (-alpha_ * zeta[i]) / kappa_;
+
+	return exp(s1 + s2 + s3);
 }
 
 double TwistFerronematic::IntegralQ(const double& h) {
