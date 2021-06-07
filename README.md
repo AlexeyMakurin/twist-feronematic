@@ -48,19 +48,27 @@ In this case, the simulation will be performed for two twist-ferronematics. For 
 <The program executable file> inputs.json
 ```
 
-The result of the simulation will be in the automatically created folder *"results"* in the current directory. For the above input values, the output will be six csv files. The name of each file contains the values of the parameters at which the simulation was performed.
+The result of the simulation will be in the automatically created folder *"results"* in the current directory. For the above input values, the output will be twelve csv files. The name of each file contains the values of the parameters at which the simulation was performed.
 ```
 'h = 0.00, alpha = 1.00, b = 100.00, sigma = 4.00, kappa = 20.00, notes = 100.csv'
+'h = 0.01, alpha = 1.00, b = 100.00, sigma = 4.00, kappa = 20.00, notes = 100.csv'
+'h = 0.10, alpha = 1.00, b = 100.00, sigma = 4.00, kappa = 20.00, notes = 100.csv'
 'h = 1.00, alpha = 1.00, b = 100.00, sigma = 4.00, kappa = 20.00, notes = 100.csv'
-'h = 2.00, alpha = 1.00, b = 100.00, sigma = 4.00, kappa = 20.00, notes = 100.csv'
+'h = 5.00, alpha = 1.00, b = 100.00, sigma = 4.00, kappa = 20.00, notes = 100.csv'
+'h = 50.00, alpha = 1.00, b = 100.00, sigma = 4.00, kappa = 20.00, notes = 100.csv'
 
-'h = 0.50, alpha = 1.00, b = 100.00, sigma = 4.00, kappa = 0.20, notes = 100.csv'
-'h = 1.50, alpha = 1.00, b = 100.00, sigma = 4.00, kappa = 0.20, notes = 100.csv'
-'h = 2.50, alpha = 1.00, b = 100.00, sigma = 4.00, kappa = 0.20, notes = 100.csv'
+'h = 0.00, alpha = 1.00, b = 100.00, sigma = 4.00, kappa = 0.20, notes = 100.csv'
+'h = 0.01, alpha = 1.00, b = 100.00, sigma = 4.00, kappa = 0.20, notes = 100.csv'
+'h = 0.10, alpha = 1.00, b = 100.00, sigma = 4.00, kappa = 0.20, notes = 100.csv'
+'h = 1.00, alpha = 1.00, b = 100.00, sigma = 4.00, kappa = 0.20, notes = 100.csv'
+'h = 5.00, alpha = 1.00, b = 100.00, sigma = 4.00, kappa = 0.20, notes = 100.csv'
+'h = 50.00, alpha = 1.00, b = 100.00, sigma = 4.00, kappa = 0.20, notes = 100.csv'
 ```
 The visualization of the obtained data is as follows.<br/>
 
 ![Image alt](image/results.png)
+
+<br/>
 
 ![Image alt](image/results_2.png)
 
