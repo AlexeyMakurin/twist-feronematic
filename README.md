@@ -31,12 +31,12 @@ As an example, take the input data file *inputs.json*:
 {
     "twist_ferronematics": [
         {
-            "h": [0.00, 1.00, 2.00],
+            "h": [0.00, 0.01, 0.10, 1.00, 5.00, 50.00],
             "configuration": {"alpha": 1.00, "b": 100.00, "sigma": 4.00, "kappa": 20.00, "nodes": 100}
         },
 
         {
-            "h": [0.50, 1.50, 2.50],
+            "h": [0.00, 0.01, 0.10, 1.00, 5.00, 50.00],
             "configuration": {"alpha": 1.00, "b": 100.00, "sigma": 4.00, "kappa": 0.20, "nodes": 100}
         }
     ]
