@@ -66,7 +66,7 @@ The result of the simulation will be in the automatically created folder *"resul
 ```
 The visualization of the obtained data is as follows.<br/>
 
-![Image alt](image/results.png)
+![Image alt](image/results.svg)
 
 <br/>
 
