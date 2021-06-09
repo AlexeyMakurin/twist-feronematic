@@ -68,9 +68,9 @@ The result of the simulation will be in the automatically created folder *"resul
 
 The visualization of the obtained data is as follows.
 
-![Image alt](image/results.png)
+![Image alt](image/results.svg)
 
-![Image alt](image/results_2.png)
+![Image alt](image/results_2.svg)
 
 The [*article*][1] provides an explanation of the meaning and origin of the quantities 𝜁, 𝜑, 𝜓, *g* and the analysis of the resulting graphs.
 
